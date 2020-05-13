@@ -1,9 +1,7 @@
---Q1 Only data from 2013, not 2014, is available
-
 USE AdventureWorks2017;
 GO
 
-SELECT TOP 5 DATEPART(yy, p.SellStartDate) AS Year
+SELECT TOP 5 DATEPART(yy, soh.OrderDate) AS Year
            , p.ProductID AS "Product ID"
            , p.Name AS "Product Name"
            , p.ProductNumber AS "Product Number"
@@ -14,8 +12,11 @@ SELECT TOP 5 DATEPART(yy, p.SellStartDate) AS Year
   FROM Production.Product AS p
        JOIN
        Sales.SalesOrderDetail AS s ON p.ProductID = s.ProductID
- WHERE DATEPART(yy, p.SellStartDate) = 2013
- GROUP BY p.ProductID
+       JOIN
+       Sales.SalesOrderHeader AS soh ON soh.SalesOrderID = s.SalesOrderID
+ WHERE DATEPART(year, soh.OrderDate) = 2014
+ GROUP BY DATEPART(year, soh.OrderDate)
+        , p.ProductID
         , p.ProductNumber
         , p.Name
         , p.Color
