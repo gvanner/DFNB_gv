@@ -9,6 +9,7 @@ MODIFICATION LOG:
 Ver   Date        Author    Description
 ---   ----------  -------   -----------------------------------------------------------------
 1.0   06/06/2020  GVANNER   1. Created the script
+1.1   06/27/2020  GAVNNER   2. Added transaction tables commands
 
 RUNTIME: 
 1 min
@@ -38,9 +39,13 @@ IF (OBJECT_ID('FK_t_account_dim_t_product_dim') IS NOT NULL)
 ALTER TABLE t_account_dim
 DROP CONSTRAINT FK_t_account_dim_t_product_dim;
 
+/*******************************************************************************************/
+
 IF (OBJECT_ID('FK_t_account_fact_t_account_dim') IS NOT NULL)
 ALTER TABLE t_account_fact
 DROP CONSTRAINT FK_t_account_fact_t_account_dim;
+
+/*******************************************************************************************/
 
 IF (OBJECT_ID('FK_t_branch_dim_t_address_dim') IS NOT NULL)
 ALTER TABLE t_branch_dim
@@ -54,6 +59,8 @@ IF (OBJECT_ID('FK_t_branch_dim_t_area_dim') IS NOT NULL)
 ALTER TABLE t_branch_dim
 DROP CONSTRAINT FK_t_branch_dim_t_area_dim;
 
+/*******************************************************************************************/
+
 IF (OBJECT_ID('FK_t_customer_account_dim_t_customer_dim') IS NOT NULL)
 ALTER TABLE t_customer_account_dim
 DROP CONSTRAINT FK_t_customer_account_dim_t_customer_dim;
@@ -66,6 +73,8 @@ IF (OBJECT_ID('FK_t_customer_account_dim_t_customer_role_dim') IS NOT NULL)
 ALTER TABLE t_customer_account_dim
 DROP CONSTRAINT FK_t_customer_account_dim_t_customer_role_dim;
 
+/*******************************************************************************************/
+
 IF (OBJECT_ID('FK_t_customer_dim_t_address_dim') IS NOT NULL)
 ALTER TABLE t_customer_dim
 DROP CONSTRAINT FK_t_customer_dim_t_address_dim;
@@ -74,7 +83,23 @@ IF (OBJECT_ID('FK_t_customer_dim_t_branch_dim') IS NOT NULL)
 ALTER TABLE t_customer_dim
 DROP CONSTRAINT FK_t_customer_dim_t_branch_dim;
 
+/*******************************************************************************************/
+
+IF (OBJECT_ID('FK_t_transaction_fact_t_branch_dim') IS NOT NULL)
+ALTER TABLE t_transaction_fact
+DROP CONSTRAINT FK_t_transaction_fact_t_branch_dim;
+
+IF (OBJECT_ID('FK_t_transaction_fact_t_account_dim') IS NOT NULL)
+ALTER TABLE t_transaction_fact
+DROP CONSTRAINT FK_t_transaction_fact_t_account_dim;
+
+IF (OBJECT_ID('FK_t_transaction_fact_t_transaction_type_dim') IS NOT NULL)
+ALTER TABLE t_transaction_fact
+DROP CONSTRAINT FK_t_transaction_fact_t_transaction_type_dim;
+
 GO
+
+/*******************************************************************************************/
 
 DELETE FROM t_account_dim
 INSERT INTO t_account_dim
@@ -109,6 +134,8 @@ INSERT INTO t_account_dim
                 7, 
                 8;
 
+/*******************************************************************************************/
+
 DELETE FROM t_account_fact
 INSERT INTO t_account_fact
 (as_of_date, 
@@ -124,6 +151,8 @@ INSERT INTO t_account_fact
                 [cur_bal]
        ORDER BY 2, 
                 1;
+
+/*******************************************************************************************/
 
 DELETE FROM t_address_dim
 INSERT INTO t_address_dim
@@ -160,12 +189,16 @@ INSERT INTO t_address_dim
                 [acct_branch_add_lon]
        ORDER BY 1;
 
+/*******************************************************************************************/
+
 DELETE FROM t_area_dim
 INSERT INTO t_area_dim(area_id)
        SELECT DISTINCT 
               [acct_area_id]
        FROM [dbo].[stg_p1]
        ORDER BY 1;
+
+/*******************************************************************************************/
 
 DELETE FROM t_branch_dim
 INSERT INTO t_branch_dim
@@ -194,6 +227,8 @@ INSERT INTO t_branch_dim
                 5, 
                 6;
 
+/*******************************************************************************************/
+
 DELETE FROM t_customer_account_dim
 INSERT INTO t_customer_account_dim
 (cust_id, 
@@ -210,6 +245,8 @@ INSERT INTO t_customer_account_dim
        ORDER BY 1, 
                 2, 
                 3;
+
+/*******************************************************************************************/
 
 DELETE FROM dbo.t_customer_dim
 INSERT INTO dbo.t_customer_dim
@@ -250,6 +287,8 @@ INSERT INTO dbo.t_customer_dim
                 9, 
                 10;
 
+/*******************************************************************************************/
+
 DELETE FROM t_customer_role_dim
 INSERT INTO t_customer_role_dim(cust_role_id)
        SELECT DISTINCT
@@ -264,22 +303,71 @@ UPDATE t_customer_role_dim
                                   ELSE 'Secondary Customer'
                               END;
 
+/*******************************************************************************************/
+
 DELETE FROM t_product_dim
 INSERT INTO t_product_dim(product_id)
        SELECT DISTINCT 
               [prod_id]
        FROM [dbo].[stg_p1]
-	  ORDER BY 1;
+    ORDER BY 1;
 
+/*******************************************************************************************/
 
 DELETE FROM t_region_dim
 INSERT INTO t_region_dim(region_id)
        SELECT DISTINCT 
               [acct_region_id]
        FROM [dbo].[stg_p1]
-	  ORDER BY 1;
+    ORDER BY 1;
+
+/*******************************************************************************************/
+
+DELETE FROM t_transaction_fact;
+INSERT INTO t_transaction_fact
+(transaction_date, 
+ transaction_time, 
+ branch_id, 
+ acct_id, 
+ transaction_type_id, 
+ transaction_amt, 
+ transaction_fee_amt
+)
+       SELECT DISTINCT
+              [tran_date], 
+              [tran_time], 
+              [branch_id], 
+              [acct_id], 
+              [tran_type_id], 
+              [tran_amt], 
+              [tran_fee_amt]
+       FROM [dbo].[stg_p2]
+       ORDER BY 1, 
+                2, 
+                4;
+                 
+/*******************************************************************************************/
+
+DELETE FROM t_transaction_type_dim;
+INSERT INTO t_transaction_type_dim
+(transaction_type_id, 
+ transaction_type_code, 
+ transaction_type_desc, 
+ transaction_fee_prct, 
+ cur_cust_req_ind
+)
+       SELECT DISTINCT 
+              [tran_type_id], 
+              [tran_type_code], 
+              [tran_type_desc], 
+              [tran_fee_prct], 
+              [cur_cust_req_ind]
+       FROM [dbo].[stg_p2]
+       ORDER BY 1;
 
 GO
+
+/*******************************************************************************************/
 
 INSERT INTO t_account_dim
 ([acct_id], 
@@ -410,6 +498,8 @@ VALUES
  'unknown'
 );
 
+/*******************************************************************************************/
+
 ALTER TABLE t_account_dim
 ADD CONSTRAINT FK_t_account_dim_t_customer_dim
 FOREIGN KEY( primary_cust_id ) REFERENCES t_customer_dim( cust_id );
@@ -422,9 +512,13 @@ ALTER TABLE t_account_dim
 ADD CONSTRAINT FK_t_account_dim_t_product_dim
 FOREIGN KEY( product_id ) REFERENCES t_product_dim( product_id );
 
+/*******************************************************************************************/
+
 ALTER TABLE t_account_fact
 ADD CONSTRAINT FK_t_account_fact_t_account_dim
 FOREIGN KEY( acct_id ) REFERENCES t_account_dim( acct_id );
+
+/*******************************************************************************************/
 
 ALTER TABLE t_branch_dim
 ADD CONSTRAINT FK_t_branch_dim_t_address_dim
@@ -438,6 +532,8 @@ ALTER TABLE t_branch_dim
 ADD CONSTRAINT FK_t_branch_dim_t_area_dim
 FOREIGN KEY( area_id ) REFERENCES t_area_dim( area_id );
 
+/*******************************************************************************************/
+
 ALTER TABLE t_customer_account_dim
 ADD CONSTRAINT FK_t_customer_account_dim_t_customer_dim
 FOREIGN KEY( cust_id ) REFERENCES t_customer_dim( cust_id );
@@ -450,6 +546,8 @@ ALTER TABLE t_customer_account_dim
 ADD CONSTRAINT FK_t_customer_account_dim_t_customer_role_dim
 FOREIGN KEY( cust_role_id ) REFERENCES t_customer_role_dim( cust_role_id );
 
+/*******************************************************************************************/
+
 ALTER TABLE t_customer_dim
 ADD CONSTRAINT FK_t_customer_dim_t_address_dim
 FOREIGN KEY( address_id ) REFERENCES t_address_dim( address_id );
@@ -457,3 +555,17 @@ FOREIGN KEY( address_id ) REFERENCES t_address_dim( address_id );
 ALTER TABLE t_customer_dim
 ADD CONSTRAINT FK_t_customer_dim_t_branch_dim
 FOREIGN KEY( primary_branch_id ) REFERENCES t_branch_dim( branch_id );
+
+/*******************************************************************************************/
+
+ALTER TABLE t_transaction_fact
+ADD CONSTRAINT FK_t_transaction_fact_t_branch_dim
+FOREIGN KEY( branch_id ) REFERENCES t_branch_dim( branch_id );
+
+ALTER TABLE t_transaction_fact
+ADD CONSTRAINT FK_t_transaction_fact_t_account_dim
+FOREIGN KEY( acct_id ) REFERENCES t_account_dim( acct_id );
+
+ALTER TABLE t_transaction_fact
+ADD CONSTRAINT FK_t_transaction_fact_t_transaction_type_dim
+FOREIGN KEY( transaction_type_id ) REFERENCES t_transaction_type_dim( transaction_type_id );
