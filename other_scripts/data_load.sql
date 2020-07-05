@@ -1,5 +1,5 @@
 /********************************************************************************************
-NAME:    data_loading
+NAME:    data_load
 PURPOSE: Load the normalized tables into DFNB2 database and assign keys
 
 SUPPORT: George Vanner
@@ -10,6 +10,7 @@ Ver   Date        Author    Description
 ---   ----------  -------   -----------------------------------------------------------------
 1.0   06/06/2020  GVANNER   1. Created the script
 1.1   06/27/2020  GAVNNER   2. Added transaction tables commands
+1.2   07/04/2020  GVANNER   3. Renamed the script
 
 RUNTIME: 
 1 min

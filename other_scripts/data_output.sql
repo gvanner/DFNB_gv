@@ -9,6 +9,7 @@ MODIFICATION LOG:
 Ver   Date        Author    Description
 ---   ----------  -------   -----------------------------------------------------------------
 1.0   06/06/2020  GVANNER   1. Created the script
+1.1   06/06/2020  GVANNER   2. Added transaction views
 
 RUNTIME: 
 1 min
@@ -62,3 +63,44 @@ ORDER BY 6,1,2;
 USE [DFNB2];
 SELECT *
 FROM [dbo].[v_customers_per_client]
+
+/*******************************************************************************************/
+
+USE [DFNB2];
+SELECT *
+FROM [dbo].[v_fees_per_account]
+ORDER BY 3 DESC, 
+         4 DESC, 
+         1;
+
+/*******************************************************************************************/
+
+USE [DFNB2];
+SELECT *
+FROM [dbo].[v_fees_per_branch]
+ORDER BY 3 DESC, 
+         4 DESC, 
+         1;
+
+/*******************************************************************************************/
+
+USE [DFNB2];
+SELECT *
+FROM [dbo].[v_transaction_type];
+
+/*******************************************************************************************/
+
+USE [DFNB2];
+SELECT *
+FROM [dbo].[v_transactions_at_other_branches]
+ORDER BY 1, 
+         2;
+
+/*******************************************************************************************/
+
+USE [DFNB2];
+SELECT *
+FROM [dbo].[v_transactions_volume]
+ORDER BY 3, 
+         2, 
+         1;
