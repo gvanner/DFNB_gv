@@ -9,7 +9,8 @@ MODIFICATION LOG:
 Ver   Date        Author    Description
 ---   ----------  -------   -----------------------------------------------------------------
 1.0   06/06/2020  GVANNER   1. Created the script
-1.1   06/06/2020  GVANNER   2. Added transaction views
+1.1   06/27/2020  GVANNER   2. Added transaction views
+1.2   07/04/2020  GVANNER   2. Added all_transactions view
 
 RUNTIME: 
 1 min
@@ -104,3 +105,9 @@ FROM [dbo].[v_transactions_volume]
 ORDER BY 3, 
          2, 
          1;
+
+/********************************************************************************************/
+
+USE [DFNB2];
+SELECT *
+FROM [dbo].[v_all_transactions];
