@@ -110,4 +110,12 @@ ORDER BY 3,
 
 USE [DFNB2];
 SELECT *
-FROM [dbo].[v_all_transactions];
+FROM [dbo].[v_all_transactions]
+
+/********************************************************************************************/
+
+USE [DFNB2];
+SELECT *
+FROM [dbo].[v_all_loans]
+ORDER BY 1,
+         2;
