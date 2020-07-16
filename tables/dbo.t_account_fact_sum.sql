@@ -8,7 +8,7 @@ SUPPORT: George Vanner
 MODIFICATION LOG:
 Ver   Date        Author    Description
 ---   ----------  -------   -----------------------------------------------------------------
-1.0   07/11/2020  GVANNER   1. Created the table
+1.0   07/16/2020  GVANNER   1. Created the table
 
 RUNTIME: 
 1 min

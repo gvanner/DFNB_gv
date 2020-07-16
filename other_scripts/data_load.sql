@@ -11,7 +11,7 @@ Ver   Date        Author    Description
 1.0   06/06/2020  GVANNER   1. Created the script
 1.1   06/27/2020  GAVNNER   2. Added transaction tables commands
 1.2   07/04/2020  GVANNER   3. Renamed the script
-1.3   07/11/2020  GVANNER   4. Added more tables
+1.3   07/16/2020  GVANNER   4. Added more tables
 
 RUNTIME: 
 1 min
